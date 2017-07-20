@@ -1,6 +1,18 @@
 <div class="container">
   <center>
     <h1>General Ledger</h1>
+
+    <%= form_tag({:action => 'index'}, {:method => :get, :class => 'form-inline'}) do%>
+      <div class="form-group">
+      <%= label_tag :from_date, nil, class: 'sr-only'%>
+      <%= text_field_tag :from_date, @from_date, :class => 'datepicker form-control', :placeholder => "Date" %>
+      </div>
+      <div class="form-group">
+      <%= label_tag :to_date, nil, class: 'sr-only'%>
+      <%= text_field_tag :to_date, @to_date, :class => 'datepicker form-control', :placeholder => "Date" %>
+      </div>
+      <button type="submit" class="btn btn-default">Get Report</button>
+    <% end %>
     <br>
   </center>
 
@@ -14,12 +26,16 @@
   </tr>
 
 <% @accounts.each do |account| %>
+  <% credits_balance = account.credits_balance(:from_date => @from_date, :to_date => @to_date) %>
+  <% debits_balance = account.debits_balance(:from_date => @from_date, :to_date => @to_date) %>
+  <% balance = account.balance(:from_date => @from_date, :to_date => @to_date) %>
+
   <tr class="<%= cycle("even", "odd") -%>">
     <td><%=h account.name %></td>
     <td><%=h account.type.sub('Plutus::','') %></td>
-    <td><%=h account.credits_balance.round(2) %></td>
-    <td><%=h account.debits_balance.round(2) %></td>
-    <td><%=h account.balance.round(2) %></td>
+    <td><%=h credits_balance.round(2) %></td>
+    <td><%=h debits_balance.round(2) %></td>
+    <td><%=h balance.round(2) %></td>
   </tr>
 <% end %>
 </table>
